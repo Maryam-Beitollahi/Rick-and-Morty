@@ -1,9 +1,9 @@
 import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import Modal from "./Modal";
-import { Character } from "./CharacterList";
+import { Character } from "./CharecterList";
 
-export default function Navbar({ children }) {
+function Navbar({ children }) {
   return (
     <nav className="navbar">
       <Logo />
@@ -12,32 +12,32 @@ export default function Navbar({ children }) {
   );
 }
 
-function Logo() {
-  return <div className="navbar__logo">LOGO 😍</div>;
-}
+export default Navbar;
 
-export function Search({ query, setQuery }) {
+function Logo() {
+  return <div className="navbar__logo">Logo</div>;
+}
+export function SearchField({ query, setQuery }) {
   return (
     <input
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      type="text"
       className="text-field"
+      type="text"
       placeholder="search..."
     />
   );
 }
-
-export function SearchResult({ numOfResult }) {
-  return <div className="navbar__result">Found {numOfResult} characters</div>;
+export function SearchResult({ numOfSearchResult }) {
+  return (
+    <div className="navbar__result">found {numOfSearchResult} characters</div>
+  );
 }
-
 export function Favourites({ favourites, onDeleteFavourite }) {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
-      <Modal onOpen={setIsOpen} open={isOpen} title="List of Favourites">
+      <Modal onOpen={setIsOpen} open={isOpen} title="list of favourites">
         {favourites.map((item) => (
           <Character key={item.id} item={item}>
             <button
@@ -56,5 +56,3 @@ export function Favourites({ favourites, onDeleteFavourite }) {
     </>
   );
 }
-
-// App => Navbar => SearchResult

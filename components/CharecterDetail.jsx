@@ -1,39 +1,39 @@
-import { ArrowUpCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Loader from "./Loader";
-import { toast } from "react-hot-toast";
+import toast, { ErrorIcon, Toaster } from "react-hot-toast";
 
-function CharacterDetail({ selectedId, onAddFavourite, isAddToFavourite }) {
+function CharecterDetail({ selectedId, onAddFavourite, isAddedToFavourite }) {
   const [character, setCharacter] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isloading, setIsLoading] = useState(false);
   const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
+        //setCharacter(null);// if we had error, it will display nothing
         const { data } = await axios.get(
           `https://rickandmortyapi.com/api/character/${selectedId}`
         );
         setCharacter(data);
 
-        const episodesId = data.episode.map((e) => e.split("/").at(-1)); // [1, 2, 3]
+        const episodesId = data.episode.map((e) => e.split("/").at(-1));
         const { data: episodeData } = await axios.get(
           `https://rickandmortyapi.com/api/episode/${episodesId}`
         );
-        setEpisodes([episodeData].flat().slice(0, 6));
+        setEpisodes([episodeData].flat().slice(0, 4));
       } catch (error) {
         toast.error(error.response.data.error);
       } finally {
         setIsLoading(false);
       }
     }
-
     if (selectedId) fetchData();
   }, [selectedId]);
 
-  if (isLoading)
+  if (isloading)
     return (
       <div style={{ flex: 1 }}>
         <Loader />
@@ -43,25 +43,24 @@ function CharacterDetail({ selectedId, onAddFavourite, isAddToFavourite }) {
   if (!character || !selectedId)
     return (
       <div style={{ flex: 1, color: "var(--slate-300)" }}>
-        Please select a character.
+        Please select a character
       </div>
     );
-
   return (
     <div style={{ flex: 1 }}>
-      <CharacterSubInfo
-        onAddFavourite={onAddFavourite}
+      <CharacterSubinfo
         character={character}
-        isAddToFavourite={isAddToFavourite}
+        isAddedToFavourite={isAddedToFavourite}
+        onAddFavourite={onAddFavourite}
       />
       <EpisodeList episodes={episodes} />
     </div>
   );
 }
 
-export default CharacterDetail;
+export default CharecterDetail;
 
-function CharacterSubInfo({ character, isAddToFavourite, onAddFavourite }) {
+function CharacterSubinfo({ character, isAddedToFavourite, onAddFavourite }) {
   return (
     <div className="character-detail">
       <img
@@ -79,21 +78,21 @@ function CharacterSubInfo({ character, isAddToFavourite, onAddFavourite }) {
             className={`status ${character.status === "Dead" ? "red" : ""}`}
           ></span>
           <span>&nbsp;{character.status}</span>
-          <span> - &nbsp;{character.species}</span>
+          <span>-&nbsp;{character.species}</span>
         </div>
         <div className="location">
           <p>Last known location:</p>
           <p>{character.location.name}</p>
         </div>
         <div className="actions">
-          {isAddToFavourite ? (
-            <p>Already Added To Favourites ✅</p>
+          {isAddedToFavourite ? (
+            <p>Already added to favourites</p>
           ) : (
             <button
               onClick={() => onAddFavourite(character)}
               className="btn btn--primary"
             >
-              Add to Favourite
+              Add to favourite
             </button>
           )}
         </div>
@@ -103,12 +102,9 @@ function CharacterSubInfo({ character, isAddToFavourite, onAddFavourite }) {
 }
 
 function EpisodeList({ episodes }) {
-  // true => earliest => asc
-  const [sortBy, setSortby] = useState(true);
-
+  const [sortby, setSortby] = useState(true);
   let sortedEpisodes;
-
-  if (sortBy) {
+  if (sortby) {
     sortedEpisodes = [...episodes].sort(
       (a, b) => new Date(a.created) - new Date(b.created)
     );
@@ -117,28 +113,26 @@ function EpisodeList({ episodes }) {
       (a, b) => new Date(b.created) - new Date(a.created)
     );
   }
-
   return (
     <div className="character-episodes">
       <div className="title">
         <h2>List of Episodes:</h2>
         <button onClick={() => setSortby((is) => !is)}>
-          <ArrowUpCircleIcon
-            className="icon"
-            style={{ rotate: sortBy ? "0deg" : "180deg" }}
-          />
+          <ArrowUpCircleIcon className="icon" style={{rotate: sortby ? "0deg" : "180deg"}}/>
         </button>
       </div>
       <ul>
-        {sortedEpisodes.map((item, index) => (
-          <li key={item.id}>
-            <div>
-              {String(index + 1).padStart(2, "0")} - {item.episode} :{" "}
-              <strong>{item.name}</strong>
-            </div>
-            <div className="badge badge--secondary">{item.air_date}</div>
-          </li>
-        ))}
+        {sortedEpisodes.map((item, index) => {
+          return (
+            <li key={item.id}>
+              <div>
+                {String(index + 1).padStart(2, "0")} {item.episode} :{" "}
+                <strong>{item.name}</strong>
+              </div>
+              <div className="badge badge--secondary">{item.air_date}</div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

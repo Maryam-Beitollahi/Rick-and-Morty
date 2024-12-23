@@ -2,9 +2,10 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import Loader from "./Loader";
 
-function CharacterList({
+function CharecterList({
   selectedId,
   characters,
+  children,
   isLoading,
   onSelectCharacter,
 }) {
@@ -14,7 +15,6 @@ function CharacterList({
         <Loader />
       </div>
     );
-
   return (
     <div className="characters-list">
       {characters.map((item) => (
@@ -31,28 +31,27 @@ function CharacterList({
   );
 }
 
-export default CharacterList;
+export default CharecterList;
 
 export function Character({ item, children }) {
   return (
     <div className="list__item">
       <img src={item.image} alt={item.name} />
-      <CharaterName item={item} />
+      <CharacterName item={item} />
       <CharacterInfo item={item} />
       {children}
     </div>
   );
 }
 
-function CharaterName({ item }) {
+function CharacterName({ item }) {
   return (
     <h3 className="name">
       <span>{item.gender === "Male" ? "👱🏻‍♂️" : "👩🏻‍🦳"}</span>
-      <span> {item.name}</span>
+      <span>{item.name}</span>
     </h3>
   );
 }
-
 function CharacterInfo({ item }) {
   return (
     <div className="list-item__info info">
@@ -62,9 +61,3 @@ function CharacterInfo({ item }) {
     </div>
   );
 }
-
-// render logic : => pure render logic !!!
-// do not perform network req.
-// do not create time
-// do not access DOM API ...
-// do not mutate object, state, props !
